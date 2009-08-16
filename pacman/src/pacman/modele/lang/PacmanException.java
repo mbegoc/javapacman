@@ -1,4 +1,4 @@
-package pacman;
+package pacman.modele.lang;
 
 public class PacmanException extends Exception {
 

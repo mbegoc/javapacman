@@ -1,7 +1,7 @@
 /*
  * Une interface que doivent implementer les objets qui veulent écouter les événements de niveau
  * */
-package pacman;
+package pacman.modele.lang;
 
 public interface LevelListener {
 	

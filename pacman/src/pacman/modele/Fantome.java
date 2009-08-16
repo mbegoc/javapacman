@@ -1,7 +1,7 @@
 /**
  * 
  */
-package pacman;
+package pacman.modele;
 
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -12,6 +12,11 @@ import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.Timer;
+
+import pacman.modele.lang.LevelListener;
+import pacman.modele.lang.PacmanEvent;
+import pacman.modele.lang.PacmanListener;
+
 
 public class Fantome implements LevelListener, PacmanListener, ActionListener{
 	

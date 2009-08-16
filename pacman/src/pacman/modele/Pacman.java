@@ -1,19 +1,22 @@
 /**
  * 
  */
-package pacman;
+package pacman.modele;
 
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Hashtable;
 import java.util.Vector;
+
+import pacman.modele.lang.LevelListener;
+import pacman.modele.lang.PacmanEvent;
+import pacman.modele.lang.PacmanListener;
+
+
 
 /**
  * @author a8begocmi
  *
  */
-public class Pacman implements KeyListener, LevelListener{
+public class Pacman implements LevelListener{
 	//	CONSTANTES
 	public final static int
 		WE = 1,
@@ -241,23 +244,8 @@ public class Pacman implements KeyListener, LevelListener{
 		listeners.remove(pl);
 	}
 
-	
-	
-	/*		METHODES EVENEMENTIELLES		*/
-	public void keyPressed(KeyEvent ke) {
-		switch(ke.getKeyCode()){
-		case 39:
-			orientSuivante = WE;
-			break;
-		case 40:
-			orientSuivante = NS;
-			break;
-		case 37:
-			orientSuivante = EW;
-			break;
-		case 38:
-			orientSuivante = SN;
-		}
+	public void setOrientationSuivante(int orient){
+		orientSuivante = orient;
 		enMouvement = true;
 	}
 
@@ -277,8 +265,4 @@ public class Pacman implements KeyListener, LevelListener{
 		burstMode = false;
 		pointsFantomes = POINTS_FANTOMES;
 	}
-
-	public void keyReleased(KeyEvent arg0) {}
-	public void keyTyped(KeyEvent arg0) {}
-
 }
