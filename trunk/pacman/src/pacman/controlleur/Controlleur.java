@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.Timer;
 
@@ -21,8 +22,8 @@ import pacman.vue.Vue;
 public class Controlleur implements ActionListener, KeyListener, LevelListener, PacmanListener{
 
 	public static final long serialVersionUID = 1L;
-	private static final int FREQUENCE_JEU = 50,
-		TEMPO_DEBUT = 5;//temporisation au début en secondes
+	private static final int FREQUENCE_JEU = 50;
+	public static final int TEMPO_DEBUT = 5;//temporisation au début en secondes
 	
 	private Timer tJeu, tDebutPartie;
 	
@@ -33,25 +34,21 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 	private Game game;
 	private Vue vue;
 	
+	private Date dureeBoucle = new Date();
+	
 	public Controlleur(){
 		super();
-
-
-		tJeu = new Timer(FREQUENCE_JEU, this);
-		tDebutPartie = new Timer(TEMPO_DEBUT * 1000, this);
-
 		
-		initialiser();
-	}
-	
-	private void initialiser(){
 		game = new Game(this);
 		vue = new Vue(this, true);
 
 		vue.addKeyListener(this);
 		
-		tDebutPartie.start();			
+		tJeu = new Timer(FREQUENCE_JEU, this);
+		tDebutPartie = new Timer(TEMPO_DEBUT * 1000, this);
+		tDebutPartie.start();
 	}
+	
 	public static void main(String[] args) throws IOException {
 		new Controlleur();
 	}
@@ -62,6 +59,10 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 	//swing
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource() == tJeu){
+			Date ancDate = dureeBoucle;
+			dureeBoucle = new Date();
+			System.out.print(dureeBoucle.getTime() - ancDate.getTime() + " - ");
+			
 			if(!pause){
 				vue.getGameDrawer().corrigerBouchePacman();
 				

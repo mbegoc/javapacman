@@ -34,7 +34,7 @@ public class Vue extends JFrame {
 	public Vue(Controlleur controlleur, boolean debug){
 		this.controlleur = controlleur;
 		
-		this.setResizable(false);
+//		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 		

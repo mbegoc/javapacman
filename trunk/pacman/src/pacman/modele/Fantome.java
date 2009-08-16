@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
+import pacman.controlleur.Controlleur;
 import pacman.modele.lang.LevelListener;
 import pacman.modele.lang.PacmanEvent;
 import pacman.modele.lang.PacmanListener;
@@ -51,37 +52,39 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		message = "";
 
 	private Level level;
+	private Pacman pacman;
 	//le temps pour chaque fantome avant qu'il ne sorte du dressing
 	private Timer peaceTime;
 
 	
 	
 	
-	public Fantome(Level level, int difficulte){
+	public Fantome(Level level, Pacman pacman, int difficulte){
 		this.difficulte = difficulte;
 		this.level = level;
+		this.pacman = pacman;
 		level.addLevelListener(this);
 		
 		if(difficulte == NIVEAU4){
 			couleur = Color.RED;
 			nom = "Blinky";
 			message = "Blinky t'as eu ! =P";
-			peaceTime = new Timer(10000, this);
+			peaceTime = new Timer((Controlleur.TEMPO_DEBUT + 6)*1000, this);
 		}else if(difficulte == NIVEAU3){
 			couleur = Color.PINK;
 			nom = "Pinky";
 			message = "Pinky n'est pas pire xD";
-			peaceTime = new Timer(7000, this);
+			peaceTime = new Timer((Controlleur.TEMPO_DEBUT + 4)*1000, this);
 		}else if(difficulte == NIVEAU2){
 			couleur = Color.CYAN;
 			nom = "Inky";
 			message = "Inky t'as effacé ;)";
-			peaceTime = new Timer(4000, this);
+			peaceTime = new Timer((Controlleur.TEMPO_DEBUT + 2)*1000, this);
 		}else if(difficulte == NIVEAU1){
 			couleur = Color.ORANGE;
 			nom = "Clyde";
 			message = "Erf, même Clyde est capable de t'avoir =D";
-			peaceTime = new Timer(1000, this);
+			peaceTime = new Timer(Controlleur.TEMPO_DEBUT * 1000, this);
 		}
 		this.x = level.getXDepart(this);
 		this.y = level.getYDepart(this);
@@ -170,16 +173,16 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		
 		if(libre){
 			if(level.isOnPath(x-1, y) && orientation != WE){
-				positionsPossibles.add(EW);
+				setDifficulte(positionsPossibles, EW);
 			}
 			if(level.isOnPath(x+1, y) && orientation != EW){
-				positionsPossibles.add(WE);
+				setDifficulte(positionsPossibles, WE);
 			}
 			if(level.isOnPath(x, y+1) && orientation != SN){
-				positionsPossibles.add(NS);
+				setDifficulte(positionsPossibles, NS);
 			}
 			if(level.isOnPath(x, y-1) && orientation != NS){
-				positionsPossibles.add(SN);
+				setDifficulte(positionsPossibles, SN);
 			}
 		}else{
 			if(level.isInDressing(x-1, y) && orientation != WE){
@@ -198,20 +201,72 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 			pas trouver de chemin, mais dans le dressing, Ã§a peut arriver au niveau de la sortie, 
 			à ce moment, il faut revenir sur ses pas*/
 			if(positionsPossibles.size() == 0){
-				if(orientation == WE)
-					orientation = EW;
-				if(orientation == EW)
-					orientation = WE;
-				if(orientation == NS)
-					orientation = SN;
-				if(orientation == SN)
-					orientation = NS;
+				orientation = orientationInverse(orientation);
 			}
 		}
 		if(positionsPossibles.size() != 0){
 			Random r = new Random();
 			orientation = positionsPossibles.get(r.nextInt(positionsPossibles.size()));
 		}
+	}
+	
+	private void setDifficulte(Vector<Integer> positionsPossibles, int direction){
+		//on commence par déterminer si cette direction est avantageuse pour attraper le Pacman
+		boolean avantageux = false;
+		if(direction == SN && (y - pacman.getY() > 0)){
+			avantageux = true;
+		}else if(direction == NS && (y - pacman.getY() < 0)){
+			avantageux = true;
+		}else if(direction == EW && (x - pacman.getX() > 0)){
+			avantageux = true;
+		}else if(direction == WE && (x - pacman.getX() < 0)){
+			avantageux = true;
+		}
+		
+		//ensuite, on va ajouter plus ou moins de fois la position pour influencer les 
+		//chances que cette direction soit choisie en fonction du couple niveau fantome / avantage
+		int qte = 1;
+		if(habille){
+			if(difficulte == NIVEAU4){
+				if(avantageux && !burstMode)
+					qte = 100;
+				else if(!avantageux && burstMode)
+					qte = 10;
+			}
+	
+			if(difficulte == NIVEAU3){
+				if(avantageux && !burstMode)
+					qte = 10;
+				else if(!avantageux && burstMode)
+					qte = 5;
+			}
+	
+			if(difficulte == NIVEAU1){
+				if(!avantageux && !burstMode)
+					qte = 5;
+				else if(avantageux && burstMode)
+					qte = 5;
+			}
+		}
+
+		ajouterChances(positionsPossibles, direction, qte);
+	}
+	
+	private int orientationInverse(int direction){
+		if(direction == WE)
+			direction = EW;
+		if(direction == EW)
+			direction = WE;
+		if(direction == NS)
+			direction = SN;
+		if(direction == SN)
+			direction = NS;
+		return direction;
+	}
+	
+	private void ajouterChances(Vector<Integer> positionsPossibles, int direction, int quantite){
+		for(int i = 0 ; i < quantite ; i++)
+			positionsPossibles.add(direction);
 	}
 	
 	private void allerPorteDressing(){
@@ -367,7 +422,8 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		}else{
 			libre = true;
 		}
-		this.orientation = SN;		
+		this.orientation = SN;
+		this.orientSuivante = SN;
 	}
 	
 	
@@ -390,6 +446,15 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		if(habille){
 			deplacement = VITESSE_LENTE;//attention à  cette valeur, elle doit etre cohérente avec la grille de jeu
 			burstMode = true;
+			if(orientation == SN && (y - pacman.getY() > 0)){
+				orientation = NS;
+			}else if(orientation == NS && (y - pacman.getY() < 0)){
+				orientation = SN;
+			}else if(orientation == EW && (x - pacman.getX() > 0)){
+				orientation = WE;
+			}else if(orientation == WE && (x - pacman.getX() < 0)){
+				orientation = EW;
+			}
 		}
 	}
 

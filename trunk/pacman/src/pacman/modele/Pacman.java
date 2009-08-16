@@ -16,6 +16,7 @@ import pacman.modele.lang.PacmanListener;
  * @author a8begocmi
  *
  */
+
 public class Pacman implements LevelListener{
 	//	CONSTANTES
 	public final static int

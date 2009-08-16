@@ -21,10 +21,10 @@ public class Game {
 		pacman.addPacmanListener(controlleur);
 
 		fantomes = new Vector<Fantome>();
-		fantomes.add(new Fantome(level, Fantome.NIVEAU1));
-		fantomes.add(new Fantome(level, Fantome.NIVEAU2));
-		fantomes.add(new Fantome(level, Fantome.NIVEAU3));
-		fantomes.add(new Fantome(level, Fantome.NIVEAU4));
+		fantomes.add(new Fantome(level, pacman, Fantome.NIVEAU1));
+		fantomes.add(new Fantome(level, pacman, Fantome.NIVEAU2));
+		fantomes.add(new Fantome(level, pacman, Fantome.NIVEAU3));
+		fantomes.add(new Fantome(level, pacman, Fantome.NIVEAU4));
 		pacman.addPacmanListener(fantomes.get(0));
 		pacman.addPacmanListener(fantomes.get(1));
 		pacman.addPacmanListener(fantomes.get(2));

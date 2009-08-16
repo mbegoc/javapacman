@@ -97,7 +97,7 @@ public class Level implements ActionListener, PacmanListener{
 		gommes = 0;
 		
 		//il va falloir charger une image et évaluer les deplacements valides a partir de cette image
-		File file = new File("bin/pacman/maps/level1.gif");
+		File file = new File("bin/pacman/maps/levelO.gif");
 		try{
 			image = ImageIO.read(file);
 		}catch(IOException ioe){
