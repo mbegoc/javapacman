@@ -1,6 +1,10 @@
-package pacman;
+package pacman.modele.lang;
 
 import java.util.EventObject;
+
+import pacman.modele.Fantome;
+
+
 
 public class PacmanEvent extends EventObject {
 	private int point = 0;

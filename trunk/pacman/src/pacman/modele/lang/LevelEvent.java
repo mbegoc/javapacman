@@ -1,4 +1,4 @@
-package pacman;
+package pacman.modele.lang;
 
 import java.util.EventObject;
 

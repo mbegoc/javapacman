@@ -11,7 +11,7 @@
 
 
 
-package pacman;
+package pacman.modele;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +22,12 @@ import javax.swing.Timer;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
+
+import pacman.modele.lang.LevelListener;
+import pacman.modele.lang.PacmanEvent;
+import pacman.modele.lang.PacmanListener;
+
+
 
 public class Level implements ActionListener, PacmanListener{
 	//	CONSTANTES
