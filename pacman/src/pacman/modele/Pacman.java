@@ -255,6 +255,7 @@ public class Pacman implements LevelListener{
 		this.y = level.getYDepart();
 		this.enMouvement = false;
 		this.orientation = EW;
+		pointsFantomes = POINTS_FANTOMES;
 		burstMode = false;
 	}
 

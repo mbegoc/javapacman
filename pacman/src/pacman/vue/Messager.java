@@ -95,7 +95,7 @@ public class Messager extends JPanel {
 			}				
 		}		
 
-		System.err.println((new Date()).getTime() - debut.getTime());
+//		System.err.println((new Date()).getTime() - debut.getTime());
 	}
 	
 	private void paintDebug(Graphics g2){

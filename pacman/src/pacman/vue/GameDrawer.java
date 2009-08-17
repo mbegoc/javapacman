@@ -61,7 +61,7 @@ public class GameDrawer extends JPanel implements ActionListener{
 		dessinerPacman(g2);
 		dessinerFantomes(g2);
 		
-		System.out.print((new Date()).getTime() - debut.getTime() + " - ");
+//		System.out.print((new Date()).getTime() - debut.getTime() + " - ");
 	}
 	
 	private void dessinerPacman(Graphics2D g2){
