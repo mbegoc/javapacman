@@ -226,19 +226,37 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		//ensuite, on va ajouter plus ou moins de fois la position pour influencer les 
 		//chances que cette direction soit choisie en fonction du couple niveau fantome / avantage
 		int qte = 1;
+		int qteProche = 0;
+		
+		//plus le fantome sera prêt du pacman, plus il aura de chances de le suivre
+		if(direction == WE || direction == EW){
+			if(Math.abs(x - pacman.getX()) < 200)
+				qteProche = 5 - (Math.abs(x - pacman.getX()) / 40);
+		}else{
+			if(Math.abs(y - pacman.getY()) < 200)
+				qteProche = 5 - (Math.abs(y - pacman.getY()) / 40);
+		}
+		
 		if(habille){
 			if(difficulte == NIVEAU4){
 				if(avantageux && !burstMode)
-					qte = 100;
+					qte = 15 + qteProche * 2;
 				else if(!avantageux && burstMode)
 					qte = 10;
 			}
 	
 			if(difficulte == NIVEAU3){
 				if(avantageux && !burstMode)
-					qte = 10;
+					qte = 10 + qteProche;
 				else if(!avantageux && burstMode)
 					qte = 5;
+			}
+	
+			if(difficulte == NIVEAU2){
+				if(avantageux && !burstMode)
+					qte = 1 + qteProche;
+				else if(!avantageux && burstMode)
+					qte = 1;
 			}
 	
 			if(difficulte == NIVEAU1){

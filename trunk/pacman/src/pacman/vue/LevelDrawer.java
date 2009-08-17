@@ -38,7 +38,7 @@ import pacman.modele.Level;
 					dessinerMur(i, j, g2);
 				}
 			}
-			System.err.print((new Date()).getTime() - debut.getTime() + " - ");
+//			System.err.print((new Date()).getTime() - debut.getTime() + " - ");
 		}
 		
 		private void dessinerMur(int x, int y, Graphics2D g){

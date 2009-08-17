@@ -40,7 +40,7 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		super();
 		
 		game = new Game(this);
-		vue = new Vue(this, true);
+		vue = new Vue(this, false);
 
 		vue.addKeyListener(this);
 		
@@ -61,7 +61,7 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		if(ae.getSource() == tJeu){
 			Date ancDate = dureeBoucle;
 			dureeBoucle = new Date();
-			System.out.print(dureeBoucle.getTime() - ancDate.getTime() + " - ");
+//			System.out.print(dureeBoucle.getTime() - ancDate.getTime() + " - ");
 			
 			if(!pause){
 				vue.getGameDrawer().corrigerBouchePacman();
