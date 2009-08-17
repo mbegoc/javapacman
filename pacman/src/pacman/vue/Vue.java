@@ -17,7 +17,7 @@ public class Vue extends JFrame {
 	public static final int TAILLE_BASE_GOMMES = 3,
 		ECHELLE = 2,
 		TEMPS_POINTS = 30,//temps d'affichage du score quand on mange un fantome
-		TEMPS_MESSAGE = 4,
+		TEMPS_MESSAGE = 40,
 		TEMPS_CLIGNOTEMENT = 5;
 	
 	Controlleur controlleur;
