@@ -31,6 +31,14 @@ public class Game {
 		pacman.addPacmanListener(fantomes.get(3));
 	}
 	
+	public void tour(){
+		pacman.deplacer();
+		for(Fantome fantome: fantomes){
+			fantome.deplacer();
+			pacman.confronter(fantome);
+		}		
+	}
+	
 	public Pacman getPacman() {
 		return pacman;
 	}
