@@ -41,6 +41,7 @@ public class Level implements ActionListener, PacmanListener{
 	DEPART = 16,//le depart du pacman - inutilisée
 	DRESSING_FANTOME = 32,//la zone reservee aux fantomes
 	PORTE_DRESSING = 64,//le point d'entree et de sortie des fantomes
+	FRUIT = 2048,
 	
 	//les differents types de murs
 	GAUCHE = 128,
@@ -63,6 +64,8 @@ public class Level implements ActionListener, PacmanListener{
 	VIN = -10223616,//LIE DE VIN - point de depart de Blinky (100, 0, 0)
 	CYAN = -16732433,//point de depart d'Inky (0, 174, 239)
 	ROSE = -65281,//position de depart de Pinky (255, 0, 255)
+	GRIS_FONCE = -11513776,
+	NOIR = -16777216,
 	
 	//constantes de réglages du niveau
 	PAS = Pacman.DEPLACEMENT * 3,
@@ -208,7 +211,7 @@ public class Level implements ActionListener, PacmanListener{
 		if(i >= 0 && j >= 0 && i < width && j < height){
 			int couleur = image.getRGB(i, j);
 
-			if(couleur == BLANC || couleur == VERT || couleur == GRIS || couleur == BLEU || couleur == JAUNE){
+			if(couleur == BLANC || couleur == VERT || couleur == GRIS || couleur == BLEU || couleur == JAUNE || couleur == GRIS_FONCE){
 				retour |= PATH;
 			}
 			if(couleur == BLANC){
@@ -229,6 +232,9 @@ public class Level implements ActionListener, PacmanListener{
 			}
 			if(couleur == ROUGE || couleur == ORANGE || couleur == VIN || couleur == CYAN || couleur == ROSE){
 				retour |= DRESSING_FANTOME;
+			}
+			if(couleur == GRIS_FONCE){
+				retour |= FRUIT;
 			}
 			if(couleur == ORANGE){
 				xDepartClyde = i;
@@ -361,6 +367,9 @@ public class Level implements ActionListener, PacmanListener{
 	public int getHeight(){
 		return height*PAS;
 	}
+	public int getLevel(){
+		return level;
+	}
 	
 	/*	EVENEMENTS LEVEL	*/
 	public void addLevelListener(LevelListener listener){
@@ -372,6 +381,7 @@ public class Level implements ActionListener, PacmanListener{
 	}
 	
 	private void levelUp(){
+		level++;
 		for(LevelListener listener: listeners){
 			listener.levelUp();
 		}

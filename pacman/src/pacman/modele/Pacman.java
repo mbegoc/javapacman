@@ -6,6 +6,7 @@ package pacman.modele;
 import java.awt.Toolkit;
 import java.util.Vector;
 
+import pacman.modele.lang.Direction;
 import pacman.modele.lang.LevelListener;
 import pacman.modele.lang.PacmanEvent;
 import pacman.modele.lang.PacmanListener;
@@ -20,10 +21,6 @@ import pacman.modele.lang.PacmanListener;
 public class Pacman implements LevelListener{
 	//	CONSTANTES
 	public final static int
-		WE = 1,
-		NS = 2,
-		EW = 3,
-		SN = 4,
 		ANGLE_BOUCHE = 45,
 		DEPLACEMENT = 4,
 		POINTS_FANTOMES = 200;
@@ -35,8 +32,8 @@ public class Pacman implements LevelListener{
 		pointsFantomes = POINTS_FANTOMES;
 	
 	private Level level;
-	private int orientation = EW,
-		orientSuivante = 0;
+	private Direction orientation = Direction.EW,
+		orientSuivante = Direction.NONE;
 	
 	public boolean enMouvement = false,
 		burstMode = false,
@@ -92,7 +89,7 @@ public class Pacman implements LevelListener{
 		}
 	}
 	
-	public void calculerDeplacement(int[] position, int orientation){
+	public void calculerDeplacement(int[] position, Direction orientation){
 		//on commence par calculer le deplacement normal
 		switch(orientation){
 		case WE:
@@ -141,7 +138,7 @@ public class Pacman implements LevelListener{
 					Toolkit.getDefaultToolkit().beep();
 					x = level.getXDepart();
 					y = level.getYDepart();
-					orientation = EW;
+					orientation = Direction.EW;
 					estAttrape(fantome);
 					if(--vies < 0)
 						estMort(fantome);
@@ -176,8 +173,8 @@ public class Pacman implements LevelListener{
 		vies = 2;
 		score = 0;
 		pointsFantomes = POINTS_FANTOMES;
-		orientation = EW;
-		orientSuivante = 0;
+		orientation = Direction.EW;
+		orientSuivante = Direction.NONE;
 		enMouvement = false;
 		burstMode = false;
 		pause = false;
@@ -206,7 +203,7 @@ public class Pacman implements LevelListener{
 		return score;
 	}
 	
-	public int getOrientation(){
+	public Direction getOrientation(){
 		return orientation;
 	}
 
@@ -245,7 +242,7 @@ public class Pacman implements LevelListener{
 		listeners.remove(pl);
 	}
 
-	public void setOrientationSuivante(int orient){
+	public void setOrientationSuivante(Direction orient){
 		orientSuivante = orient;
 		enMouvement = true;
 	}
@@ -254,13 +251,14 @@ public class Pacman implements LevelListener{
 		this.x = level.getXDepart();
 		this.y = level.getYDepart();
 		this.enMouvement = false;
-		this.orientation = EW;
+		this.orientation = Direction.EW;
 		pointsFantomes = POINTS_FANTOMES;
 		burstMode = false;
 	}
 
 	public void beginBurstMode() {
 		burstMode = true;
+		pointsFantomes = POINTS_FANTOMES;
 	}
 
 	public void endBurstMode() {

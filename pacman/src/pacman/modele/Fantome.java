@@ -14,19 +14,14 @@ import java.util.Vector;
 import javax.swing.Timer;
 
 import pacman.controlleur.Controlleur;
+import pacman.modele.lang.Direction;
 import pacman.modele.lang.LevelListener;
 import pacman.modele.lang.PacmanEvent;
 import pacman.modele.lang.PacmanListener;
 
 
 public class Fantome implements LevelListener, PacmanListener, ActionListener{
-	
-	//CONSTANTES
-	public final static int
-		WE = 1,
-		NS = 2,
-		EW = 3,
-		SN = 4;
+
 	/*ces valeurs doivent impérativement 
 	être un diviseur du pas du jeu, sinon les fantomes se decallent 
 	dans la grille du jeu et ne peuvent plus circuler normalement*/
@@ -42,8 +37,8 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 	private int x, y, 
 		deplacement = VITESSE_NORMALE,
 		difficulte;
-	private int orientation = SN,
-		orientSuivante = 0;
+	private Direction orientation = Direction.SN,
+		orientSuivante = Direction.NONE;
 	private boolean libre = false,//peut sortir du dressing
 		habille = true,
 		burstMode = false;
@@ -128,7 +123,7 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 	
 	public void calculerDeplacement(int[] position){
 		//on commence par calculer le deplacement normal
-		switch(orientation){
+		switch (orientation){
 		case WE:
 			position[0] += deplacement;
 			break;
@@ -140,6 +135,7 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 			break;
 		case SN:
 			position[1] -= deplacement;
+			break;
 		}
 		
 		//puis on regarde si le pacman est arrivé au bord de la carte pour le faire passer de l'autre côté de la map
@@ -158,7 +154,7 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 	}
 	
 	private void orienter(int chance){
-		Vector<Integer> positionsPossibles = new Vector<Integer>();
+		Vector<Direction> positionsPossibles = new Vector<Direction>();
 		int[] position = new int[2];
 		position[0] = x;
 		position[1] = y;
@@ -172,30 +168,30 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 				positionsPossibles.add(orientation);
 		
 		if(libre){
-			if(level.isOnPath(x-1, y) && orientation != WE){
-				setDifficulte(positionsPossibles, EW);
+			if(level.isOnPath(x-1, y) && orientation != Direction.WE){
+				setDifficulte(positionsPossibles, Direction.EW);
 			}
-			if(level.isOnPath(x+1, y) && orientation != EW){
-				setDifficulte(positionsPossibles, WE);
+			if(level.isOnPath(x+1, y) && orientation != Direction.EW){
+				setDifficulte(positionsPossibles, Direction.WE);
 			}
-			if(level.isOnPath(x, y+1) && orientation != SN){
-				setDifficulte(positionsPossibles, NS);
+			if(level.isOnPath(x, y+1) && orientation != Direction.SN){
+				setDifficulte(positionsPossibles, Direction.NS);
 			}
-			if(level.isOnPath(x, y-1) && orientation != NS){
-				setDifficulte(positionsPossibles, SN);
+			if(level.isOnPath(x, y-1) && orientation != Direction.NS){
+				setDifficulte(positionsPossibles, Direction.SN);
 			}
 		}else{
-			if(level.isInDressing(x-1, y) && orientation != WE){
-				positionsPossibles.add(EW);
+			if(level.isInDressing(x-1, y) && orientation != Direction.WE){
+				positionsPossibles.add(Direction.EW);
 			}
-			if(level.isInDressing(x+1, y) && orientation != EW){
-				positionsPossibles.add(WE);
+			if(level.isInDressing(x+1, y) && orientation != Direction.EW){
+				positionsPossibles.add(Direction.WE);
 			}
-			if(level.isInDressing(x, y+1) && orientation != SN){
-				positionsPossibles.add(NS);
+			if(level.isInDressing(x, y+1) && orientation != Direction.SN){
+				positionsPossibles.add(Direction.NS);
 			}
-			if(level.isInDressing(x, y-1) && orientation != NS){
-				positionsPossibles.add(SN);
+			if(level.isInDressing(x, y-1) && orientation != Direction.NS){
+				positionsPossibles.add(Direction.SN);
 			}
 			/*dans le parcours normal, il n'est pas possible de ne 
 			pas trouver de chemin, mais dans le dressing, Ã§a peut arriver au niveau de la sortie, 
@@ -210,16 +206,16 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		}
 	}
 	
-	private void setDifficulte(Vector<Integer> positionsPossibles, int direction){
+	private void setDifficulte(Vector<Direction> positionsPossibles, Direction direction){
 		//on commence par déterminer si cette direction est avantageuse pour attraper le Pacman
 		boolean avantageux = false;
-		if(direction == SN && (y - pacman.getY() > 0)){
+		if(direction == Direction.SN && (y - pacman.getY() > 0)){
 			avantageux = true;
-		}else if(direction == NS && (y - pacman.getY() < 0)){
+		}else if(direction == Direction.NS && (y - pacman.getY() < 0)){
 			avantageux = true;
-		}else if(direction == EW && (x - pacman.getX() > 0)){
+		}else if(direction == Direction.EW && (x - pacman.getX() > 0)){
 			avantageux = true;
-		}else if(direction == WE && (x - pacman.getX() < 0)){
+		}else if(direction == Direction.WE && (x - pacman.getX() < 0)){
 			avantageux = true;
 		}
 		
@@ -229,7 +225,7 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		int qteProche = 0;
 		
 		//plus le fantome sera prêt du pacman, plus il aura de chances de le suivre
-		if(direction == WE || direction == EW){
+		if(direction == Direction.WE || direction == Direction.EW){
 			if(Math.abs(x - pacman.getX()) < 200)
 				qteProche = 5 - (Math.abs(x - pacman.getX()) / 40);
 		}else{
@@ -240,49 +236,60 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		if(habille){
 			if(difficulte == NIVEAU4){
 				if(avantageux && !burstMode)
-					qte = 15 + qteProche * 2;
+					qte = 15 + qteProche * 2 + level.getLevel();
 				else if(!avantageux && burstMode)
-					qte = 10;
+					qte = 10 + level.getLevel();
 			}
 	
 			if(difficulte == NIVEAU3){
 				if(avantageux && !burstMode)
-					qte = 10 + qteProche;
+					qte = 10 + qteProche + level.getLevel();
 				else if(!avantageux && burstMode)
-					qte = 5;
+					qte = 5 + level.getLevel();
 			}
 	
 			if(difficulte == NIVEAU2){
 				if(avantageux && !burstMode)
-					qte = 1 + qteProche;
+					qte = 1 + qteProche + level.getLevel();
 				else if(!avantageux && burstMode)
-					qte = 1;
+					qte = 1 + level.getLevel();
 			}
 	
 			if(difficulte == NIVEAU1){
 				if(!avantageux && !burstMode)
-					qte = 5;
+					qte = 5 - level.getLevel();
 				else if(avantageux && burstMode)
-					qte = 5;
+					qte = 5 - level.getLevel();
 			}
 		}
 
+		if(qte < 1)
+			qte = 0;
+		
+		if(difficulte != NIVEAU1){
+			if(direction == pacman.getOrientation() && !burstMode){
+				qte += level.getLevel() + difficulte;
+			}else if(direction == orientationInverse(pacman.getOrientation()) && burstMode){
+				qte += level.getLevel() + difficulte;
+			}
+		}	
+		
 		ajouterChances(positionsPossibles, direction, qte);
 	}
 	
-	private int orientationInverse(int direction){
-		if(direction == WE)
-			direction = EW;
-		if(direction == EW)
-			direction = WE;
-		if(direction == NS)
-			direction = SN;
-		if(direction == SN)
-			direction = NS;
+	private Direction orientationInverse(Direction direction){
+		if(direction == Direction.WE)
+			direction = Direction.EW;
+		if(direction == Direction.EW)
+			direction = Direction.WE;
+		if(direction == Direction.NS)
+			direction = Direction.SN;
+		if(direction == Direction.SN)
+			direction = Direction.NS;
 		return direction;
 	}
 	
-	private void ajouterChances(Vector<Integer> positionsPossibles, int direction, int quantite){
+	private void ajouterChances(Vector<Direction> positionsPossibles, Direction direction, int quantite){
 		for(int i = 0 ; i < quantite ; i++)
 			positionsPossibles.add(direction);
 	}
@@ -301,34 +308,34 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 
 		}else if(level.isOnPath(x, y)){
 			//on commence par identifier les chemins possibles
-			Vector<Integer> positionsPossibles = new Vector<Integer>();
-			if(level.isOnPath(x-1, y) && orientation != WE){
-				positionsPossibles.add(EW);
+			Vector<Direction> positionsPossibles = new Vector<Direction>();
+			if(level.isOnPath(x-1, y) && orientation != Direction.WE){
+				positionsPossibles.add(Direction.EW);
 			}
-			if(level.isOnPath(x+1, y) && orientation != EW){
-				positionsPossibles.add(WE);
+			if(level.isOnPath(x+1, y) && orientation != Direction.EW){
+				positionsPossibles.add(Direction.WE);
 			}
-			if(level.isOnPath(x, y+1) && orientation != SN){
-				positionsPossibles.add(NS);
+			if(level.isOnPath(x, y+1) && orientation != Direction.SN){
+				positionsPossibles.add(Direction.NS);
 			}
-			if(level.isOnPath(x, y-1) && orientation != NS){
-				positionsPossibles.add(SN);
+			if(level.isOnPath(x, y-1) && orientation != Direction.NS){
+				positionsPossibles.add(Direction.SN);
 			}
 			if(level.getXDressing() - x >= 0)
-				if(positionsPossibles.indexOf(EW) != -1 && positionsPossibles.size() > 1){
-					positionsPossibles.remove(positionsPossibles.indexOf(EW));
+				if(positionsPossibles.indexOf(Direction.EW) != -1 && positionsPossibles.size() > 1){
+					positionsPossibles.remove(positionsPossibles.indexOf(Direction.EW));
 				}
 			if(level.getXDressing() - x <= 0)
-				if(positionsPossibles.indexOf(WE) != -1 && positionsPossibles.size() > 1){
-					positionsPossibles.remove(positionsPossibles.indexOf(WE));
+				if(positionsPossibles.indexOf(Direction.WE) != -1 && positionsPossibles.size() > 1){
+					positionsPossibles.remove(positionsPossibles.indexOf(Direction.WE));
 				}
 			if(level.getYDressing() - y >= 0)
-				if(positionsPossibles.indexOf(SN) != -1 && positionsPossibles.size() > 1){
-					positionsPossibles.remove(positionsPossibles.indexOf(SN));
+				if(positionsPossibles.indexOf(Direction.SN) != -1 && positionsPossibles.size() > 1){
+					positionsPossibles.remove(positionsPossibles.indexOf(Direction.SN));
 				}
 			if(level.getYDressing() - y <= 0)
-				if(positionsPossibles.indexOf(NS) != -1 && positionsPossibles.size() > 1){
-					positionsPossibles.remove(positionsPossibles.indexOf(NS));
+				if(positionsPossibles.indexOf(Direction.NS) != -1 && positionsPossibles.size() > 1){
+					positionsPossibles.remove(positionsPossibles.indexOf(Direction.NS));
 				}
 			if(positionsPossibles.size() != 0){
 				Random r = new Random();
@@ -404,7 +411,7 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		return y;
 	}
 	
-	public int getOrientation(){
+	public Direction getOrientation(){
 		return orientation;
 	}
 
@@ -440,8 +447,8 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 		}else{
 			libre = true;
 		}
-		this.orientation = SN;
-		this.orientSuivante = SN;
+		this.orientation = Direction.SN;
+		this.orientSuivante = Direction.SN;
 	}
 	
 	
@@ -462,17 +469,19 @@ public class Fantome implements LevelListener, PacmanListener, ActionListener{
 
 	public void beginBurstMode() {
 		if(habille){
+			if(!burstMode){
+				if(orientation == Direction.SN && (y - pacman.getY() > 0)){
+					orientation = Direction.NS;
+				}else if(orientation == Direction.NS && (y - pacman.getY() < 0)){
+					orientation = Direction.SN;
+				}else if(orientation == Direction.EW && (x - pacman.getX() > 0)){
+					orientation = Direction.WE;
+				}else if(orientation == Direction.WE && (x - pacman.getX() < 0)){
+					orientation = Direction.EW;
+				}
+			}
 			deplacement = VITESSE_LENTE;//attention à  cette valeur, elle doit etre cohérente avec la grille de jeu
 			burstMode = true;
-			if(orientation == SN && (y - pacman.getY() > 0)){
-				orientation = NS;
-			}else if(orientation == NS && (y - pacman.getY() < 0)){
-				orientation = SN;
-			}else if(orientation == EW && (x - pacman.getX() > 0)){
-				orientation = WE;
-			}else if(orientation == WE && (x - pacman.getX() < 0)){
-				orientation = EW;
-			}
 		}
 	}
 
