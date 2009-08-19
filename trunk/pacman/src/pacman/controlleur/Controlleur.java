@@ -4,15 +4,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Timer;
 
 import pacman.modele.Fantome;
 import pacman.modele.Game;
 import pacman.modele.Level;
 import pacman.modele.Pacman;
+import pacman.modele.lang.Direction;
 import pacman.modele.lang.LevelListener;
 import pacman.modele.lang.PacmanEvent;
 import pacman.modele.lang.PacmanListener;
@@ -22,7 +30,7 @@ import pacman.vue.Vue;
 public class Controlleur implements ActionListener, KeyListener, LevelListener, PacmanListener{
 
 	public static final long serialVersionUID = 1L;
-	private static final int FREQUENCE_JEU = 50;
+	private static final int FREQUENCE_JEU = 40;
 	public static final int TEMPO_DEBUT = 5;//temporisation au début en secondes
 	
 	private Timer tJeu, tDebutPartie;
@@ -47,6 +55,20 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		tJeu = new Timer(FREQUENCE_JEU, this);
 		tDebutPartie = new Timer(TEMPO_DEBUT * 1000, this);
 		tDebutPartie.start();
+		
+//		try {
+//			AudioInputStream a = AudioSystem.getAudioInputStream(new File("src/pacman/sounds/burzum.wav"));
+//		    DataLine.Info info = new DataLine.Info(Clip.class, a.getFormat());
+//		    Clip c = (Clip) AudioSystem.getLine(info);
+//		    c.open(a);
+//			c.start();
+//		} catch (UnsupportedAudioFileException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (LineUnavailableException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -61,18 +83,13 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		if(ae.getSource() == tJeu){
 			Date ancDate = dureeBoucle;
 			dureeBoucle = new Date();
-//			System.out.print(dureeBoucle.getTime() - ancDate.getTime() + " - ");
+//			setDebugMessage(this, "délai boucle principale: ", Long.toString(dureeBoucle.getTime()));
 			
 			if(!pause){
 				vue.getGameDrawer().corrigerBouchePacman();
+				game.tour();
 				
-				game.getPacman().deplacer();
-				for(Fantome fantome: game.getFantomes()){
-					fantome.deplacer();
-					game.getPacman().confronter(fantome);
-				}
-				
-				vue.getGameDrawer().repaint();
+				vue.repaint();
 			}else if(tempsPause >= 0){
 				if(tempsPause-- == 0){
 					pause = false;
@@ -99,22 +116,22 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 			game.getPacman().reinitialiser();
 			vue.getMessager().initPointsFantomes();
 			vue.getMessager().setMessage("", -1);
-		}	
+		}
 	}
 	
 	public void keyPressed(KeyEvent ke) {
 		switch(ke.getKeyCode()){
 		case 39:
-			game.getPacman().setOrientationSuivante(Pacman.WE);
+			game.getPacman().setOrientationSuivante(Direction.WE);
 			break;
 		case 40:
-			game.getPacman().setOrientationSuivante(Pacman.NS);
+			game.getPacman().setOrientationSuivante(Direction.NS);
 			break;
 		case 37:
-			game.getPacman().setOrientationSuivante(Pacman.EW);
+			game.getPacman().setOrientationSuivante(Direction.EW);
 			break;
 		case 38:
-			game.getPacman().setOrientationSuivante(Pacman.SN);
+			game.getPacman().setOrientationSuivante(Direction.SN);
 		}
 	}
 
@@ -187,8 +204,8 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		return game;
 	}
 	
-	public void setDebugMessage(String message){
-		
+	public void setDebugMessage(Object source, String nom, String message){
+		vue.getDebugger().addMessage(source, nom, message);
 	}
 }
 	
