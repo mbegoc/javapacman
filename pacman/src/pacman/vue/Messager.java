@@ -38,7 +38,7 @@ public class Messager extends JPanel {
 		messages.add("<nom> n'a plus que ses yeux pour pleurer =D");
 		messages.add("Un petit bout de <nom> t'es resté entre les dents =/");
 		messages.add("<nom> a un petit goût de guimauve :P");
-		messages.add("<nom> retourne se rabiller xD");	
+		messages.add("<nom> peut retourner se rabiller xD");	
 	}
 
 	public Messager(Vue parent, boolean debug){

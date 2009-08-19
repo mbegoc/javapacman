@@ -15,6 +15,7 @@ import javax.swing.Timer;
 import pacman.modele.Fantome;
 import pacman.modele.Level;
 import pacman.modele.Pacman;
+import pacman.modele.lang.Direction;
 
 public class GameDrawer extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
@@ -71,13 +72,13 @@ public class GameDrawer extends JPanel implements ActionListener{
 		int angleDepart = Pacman.ANGLE_BOUCHE;
 		int angle = 270;
 		switch(pacman.getOrientation()){
-		case Pacman.NS:
+		case NS:
 			angleDepart=Pacman.ANGLE_BOUCHE+270;
 			break;
-		case Pacman.EW:
+		case EW:
 			angleDepart=Pacman.ANGLE_BOUCHE+180;
 			break;
-		case Pacman.SN:
+		case SN:
 			angleDepart=Pacman.ANGLE_BOUCHE+90;
 		}
 		
@@ -135,15 +136,19 @@ public class GameDrawer extends JPanel implements ActionListener{
 			int yPupilles = y+quart+blanc/4;
 			
 			if(!fantome.getBurstMode() || !fantome.estHabille()){
-				if(fantome.getOrientation() == Fantome.WE){
+				switch(fantome.getOrientation()){
+				case WE:
 					xPupilleDroite += pupille/2;
 					xPupilleGauche += pupille/2;
-				}else if(fantome.getOrientation() == Fantome.EW){
+					break;
+				case EW:
 					xPupilleDroite -= pupille/2;
 					xPupilleGauche -= pupille/2;
-				}else if(fantome.getOrientation() == Fantome.NS){
+					break;
+				case NS:
 					yPupilles += pupille/2;
-				}else if(fantome.getOrientation() == Fantome.SN){					
+					break;
+				case SN:					
 					yPupilles -= pupille/2;
 				}
 			}
@@ -178,17 +183,17 @@ public class GameDrawer extends JPanel implements ActionListener{
 	public void corrigerBouchePacman(){
 		if(modifAngle <= 0 || modifAngle >= Pacman.ANGLE_BOUCHE)
 			valModifAngle *= -1;
-		modifAngle += valModifAngle;		
+		modifAngle += valModifAngle;
 	}
 	
 	public void resetBouchePacman(){
 		modifAngle = 0;
-		valModifAngle = -10;		
+		valModifAngle = -10;
 	}
 	
 	public void setClignotant(int delay){
 		tClignotant.setDelay(delay);
-		tClignotant.start();
+		tClignotant.restart();
 		clignotant = true;		
 	}
 	

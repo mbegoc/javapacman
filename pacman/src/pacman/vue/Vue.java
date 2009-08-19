@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import pacman.controlleur.Controlleur;
 import pacman.modele.Game;
 import pacman.modele.Level;
+import perso.utils.Debug;
 
 public class Vue extends JFrame {
 
@@ -26,6 +27,7 @@ public class Vue extends JFrame {
 	private GameDrawer gameDrawer;
 	private Messager messager;
 	private LevelDrawer levelDrawer;
+	private Debug debugger;
 	
 	public Vue(Controlleur controlleur){
 		this(controlleur, false);
@@ -34,6 +36,7 @@ public class Vue extends JFrame {
 	public Vue(Controlleur controlleur, boolean debug){
 		this.controlleur = controlleur;
 		
+		setTitle("Pacman java");
 //		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
@@ -51,10 +54,12 @@ public class Vue extends JFrame {
 		gameDrawer = new GameDrawer(this);
 		levelDrawer = new LevelDrawer(this);
 		messager = new Messager(this, debug);
+		debugger = new Debug(200, 200);
 		
-		this.getLayeredPane().add(gameDrawer, new Integer(-2));
-		this.getLayeredPane().add(levelDrawer, new Integer(-3));
-		this.getLayeredPane().add(messager, new Integer(-1));
+		this.getLayeredPane().add(debugger, new Integer(-10));
+		this.getLayeredPane().add(gameDrawer, new Integer(-100));
+		this.getLayeredPane().add(levelDrawer, new Integer(-200));
+		this.getLayeredPane().add(messager, new Integer(-50));
 	}
 
 	public Game getGame(){
@@ -75,5 +80,9 @@ public class Vue extends JFrame {
 
 	public LevelDrawer getLevelDrawer() {
 		return levelDrawer;
+	}
+	
+	public Debug getDebugger(){
+		return debugger;
 	}
 }
