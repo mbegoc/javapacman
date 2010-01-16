@@ -4,22 +4,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Timer;
 
 import pacman.modele.Fantome;
 import pacman.modele.Game;
 import pacman.modele.Level;
-import pacman.modele.Pacman;
 import pacman.modele.lang.Direction;
 import pacman.modele.lang.LevelListener;
 import pacman.modele.lang.PacmanEvent;
@@ -31,13 +23,14 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 
 	public static final long serialVersionUID = 1L;
 	private static final int FREQUENCE_JEU = 40;
-	public static final int TEMPO_DEBUT = 5;//temporisation au début en secondes
+	public static final int TEMPO_DEBUT = 3;
 	
 	private Timer tJeu, tDebutPartie;
 	
 	//gameplay
 	private boolean pause = false;
-	private int tempsPause = -1;
+	private int tempsPause = -1,
+				tempoDebut = TEMPO_DEBUT;
 	
 	private Game game;
 	private Vue vue;
@@ -51,24 +44,11 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		vue = new Vue(this, false);
 
 		vue.addKeyListener(this);
+		vue.getMessager().setBigMessage(Integer.toString(tempoDebut));
 		
 		tJeu = new Timer(FREQUENCE_JEU, this);
-		tDebutPartie = new Timer(TEMPO_DEBUT * 1000, this);
+		tDebutPartie = new Timer(1000, this);
 		tDebutPartie.start();
-		
-//		try {
-//			AudioInputStream a = AudioSystem.getAudioInputStream(new File("src/pacman/sounds/burzum.wav"));
-//		    DataLine.Info info = new DataLine.Info(Clip.class, a.getFormat());
-//		    Clip c = (Clip) AudioSystem.getLine(info);
-//		    c.open(a);
-//			c.start();
-//		} catch (UnsupportedAudioFileException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (LineUnavailableException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -96,8 +76,14 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 				}
 			}
 		}else if(ae.getSource() == tDebutPartie){
-			tDebutPartie.stop();
-			tJeu.start();
+			if(--tempoDebut != 0){
+				vue.getMessager().setBigMessage(Integer.toString(tempoDebut));
+				vue.repaint();
+			}else{
+				tDebutPartie.stop();
+				tJeu.start();
+				vue.getMessager().clearBigMessage();
+			}
 		}
 	}
 
@@ -110,13 +96,32 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 //				parent.remove(gestionScores);
 //				gestionScores = null;
 //			}
-			game.getLevel().initialiser();
-			for(Fantome fantome: game.getFantomes())
-				fantome.reinitialiser(true);
-			game.getPacman().reinitialiser();
-			vue.getMessager().initPointsFantomes();
-			vue.getMessager().setMessage("", -1);
+			reinitialiser();
 		}
+	}
+	
+	protected void reinitialiser(){
+		vue.getMessager().setBigMessage(Integer.toString(TEMPO_DEBUT));
+		game.getLevel().initialiser();
+		for(Fantome fantome: game.getFantomes())
+			fantome.reinitialiser(true);
+		game.getPacman().reinitialiser();
+		vue.getMessager().initPointsFantomes();
+		vue.getMessager().setMessage("", -1);
+		tempoDebut = TEMPO_DEBUT;
+		vue.repaint();
+	}
+	
+	protected void reinitialiser(String map){
+		vue.getMessager().setBigMessage(Integer.toString(TEMPO_DEBUT));
+		game.getLevel().initialiser(map);
+		for(Fantome fantome: game.getFantomes())
+			fantome.reinitialiser(true);
+		game.getPacman().reinitialiser();
+		vue.getMessager().initPointsFantomes();
+		vue.getMessager().setMessage("", -1);
+		tempoDebut = TEMPO_DEBUT;
+		vue.repaint();
 	}
 	
 	public void keyPressed(KeyEvent ke) {
@@ -132,6 +137,18 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 			break;
 		case 38:
 			game.getPacman().setOrientationSuivante(Direction.SN);
+			break;
+		case 79:
+			reinitialiser("O");
+			break;
+		case 49:
+			reinitialiser("1");
+			break;
+		case 50:
+			reinitialiser("2");
+			break;
+		case 51:
+			reinitialiser("3");			
 		}
 	}
 
@@ -151,6 +168,8 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		tJeu.stop();
 		tDebutPartie.start();
 		
+		tempoDebut = TEMPO_DEBUT;
+		vue.getMessager().setBigMessage(Integer.toString(TEMPO_DEBUT));
 		vue.getMessager().initPointsFantomes();
 		vue.getMessager().setMessage("", -1);
 	}
@@ -161,6 +180,8 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 		
 		tJeu.stop();
 		tDebutPartie.restart();
+		tempoDebut = TEMPO_DEBUT;
+		vue.getMessager().setBigMessage(Integer.toString(TEMPO_DEBUT));
 		vue.getMessager().setMessage(pe.getFantome().getMessage(), Vue.TEMPS_MESSAGE);
 	}
 
@@ -179,6 +200,7 @@ public class Controlleur implements ActionListener, KeyListener, LevelListener, 
 	public void estMort(PacmanEvent pe) {
 		tJeu.stop();
 		tDebutPartie.stop();
+		vue.getMessager().setBigMessage("Game Over");
 
 //		this.setVisible(false);
 //		gestionScores = new GestionScores(this.parent, pacman.getScore());

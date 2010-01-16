@@ -1,15 +1,19 @@
 package pacman.vue;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.plaf.basic.BasicGraphicsUtils;
 
 import pacman.modele.Fantome;
 import pacman.modele.Level;
@@ -28,6 +32,7 @@ public class Messager extends JPanel {
 	private boolean debug = false;
 	private int tempsMessage = -1;
 	private String message = "";
+	private String bigMessage = "";
 	
 	public Messager(Vue parent){
 		this.parent = parent;
@@ -38,7 +43,7 @@ public class Messager extends JPanel {
 		messages.add("<nom> n'a plus que ses yeux pour pleurer =D");
 		messages.add("Un petit bout de <nom> t'es resté entre les dents =/");
 		messages.add("<nom> a un petit goût de guimauve :P");
-		messages.add("<nom> peut retourner se rabiller xD");	
+		messages.add("<nom> peut retourner se rabiller xD");
 	}
 
 	public Messager(Vue parent, boolean debug){
@@ -55,6 +60,9 @@ public class Messager extends JPanel {
 
 		Pacman pacman = parent.getGame().getPacman();
 		Level level = parent.getGame().getLevel();
+
+		int xCenter = level.getWidth() * Vue.ECHELLE / 2;
+		int yCenter = level.getHeight() * Vue.ECHELLE / 2;
 		
 		g2.setColor(Color.WHITE);
 		g2.drawString("Score: " + pacman.getScore(), 10, 10);
@@ -67,7 +75,16 @@ public class Messager extends JPanel {
 		}
 
 		g2.setColor(Color.WHITE);
-		g2.drawString("r = recommencer / p = pause", 250, 10);
+		Rectangle2D bounds0 = g2.getFontMetrics().getStringBounds("r = recommencer / p = pause", g2);
+		g2.drawString("r = recommencer / p = pause", xCenter - (int)bounds0.getCenterX(), 10);
+		
+		String strOthers = "Appuyer sur 1, 2 ou 3 pour charger d'autres niveaux";
+		Rectangle2D bounds1 = g2.getFontMetrics().getStringBounds(strOthers, g2);
+		g2.drawString(strOthers, level.getWidth() * Vue.ECHELLE - (int)bounds1.getWidth() - 3, level.getHeight()*Vue.ECHELLE - 3);
+		
+		String strOriginal = "Appuyer sur o pour recharger le niveau original";
+		Rectangle2D bounds2 = g2.getFontMetrics().getStringBounds(strOriginal, g2);
+		g2.drawString(strOriginal, level.getWidth() * Vue.ECHELLE - (int)bounds2.getWidth() - 3, level.getHeight()*Vue.ECHELLE - 3 - (int)bounds1.getHeight());
 		
 		//affichage des points
 		g2.setColor(Color.WHITE);
@@ -85,6 +102,13 @@ public class Messager extends JPanel {
 		if(debug){
 			paintDebug(g2);
 		}else{
+			Font font = g2.getFont();
+			g2.setColor(Color.LIGHT_GRAY);
+			Font newFont = font.deriveFont(Font.BOLD, 30);
+			g2.setFont(newFont);
+			Rectangle2D shape = newFont.getStringBounds(bigMessage, g2.getFontRenderContext());
+			g2.drawString(bigMessage, getWidth() / 2 - (int)shape.getCenterX(), getHeight() / 2 - 15);
+			g2.setFont(font);
 			try{
 				g2.drawString(message, 10, level.getHeight()*Vue.ECHELLE - 3);
 				if(tempsMessage-- == 0)
@@ -93,7 +117,7 @@ public class Messager extends JPanel {
 				//cette erreur se produit lorsque le thread du timer et celui qui affiche essaient d'accéder en même temps au vecteur de points
 				//on ne fait rien, tant pis si le score n'est pas affiché pour cette fois, ce n'est pas tres grave
 			}				
-		}		
+		}	
 
 //		System.err.println((new Date()).getTime() - debut.getTime());
 	}
@@ -125,6 +149,14 @@ public class Messager extends JPanel {
 				}
 			}
 		}			
+	}
+	
+	public void setBigMessage(String message){
+		bigMessage = message;
+	}
+	
+	public void clearBigMessage(){
+		bigMessage = "";
 	}
 	
 	public void setMessage(String message, int temps){
