@@ -18,6 +18,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+
 import javax.swing.Timer;
 import java.util.Vector;
 
@@ -88,6 +90,7 @@ public class Level implements ActionListener, PacmanListener{
 	private int width, height, 
 		gommes = 0,
 		level = 0;
+	private String map = "O";
 	
 	private Timer tBurstMode = new Timer(DUREE_BURST_MODE*1000, this);
 	
@@ -96,15 +99,21 @@ public class Level implements ActionListener, PacmanListener{
 		initialiser();
 	}
 	
+	public void initialiser(String map){
+		this.map = map;
+		initialiser();
+	}
+	
 	public void initialiser(){
 		gommes = 0;
 		
 		//il va falloir charger une image et évaluer les deplacements valides a partir de cette image
-		File file = new File("bin/pacman/maps/levelO.gif");
 		try{
-			image = ImageIO.read(file);
+//			System.out.println(getClass().getClassLoader().getResource("pacman/maps/levelO.gif").toURI());
+//			File file = new File(.toURI());
+			image = ImageIO.read(getClass().getClassLoader().getResource("pacman/maps/level"+map+".gif"));
 		}catch(IOException ioe){
-			System.out.println("Impossible de lire le niveau "+level+": "+ioe.getMessage());
+			System.out.println("Impossible de lire le niveau "+map+": "+ioe.getMessage());
 			System.exit(1);
 		}
 
