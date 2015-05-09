@@ -1,0 +1,1 @@
+Ce Pacman a été commencé lors d'un tp dans un cours de programmation en Java. Le but est d'en faire une version finie.
